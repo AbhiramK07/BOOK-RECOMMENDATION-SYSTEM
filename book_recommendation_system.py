@@ -3,17 +3,15 @@ import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 
-# Set Google Gemini API Key securely
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if not GOOGLE_API_KEY:
     st.error("Google API key is missing! Set it as an environment variable.")
     st.stop()
 
-# Initialize Google Gemini AI model
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-# Define the prompt template
+
 prompt = PromptTemplate(
     input_variables=["genre", "language", "year_range", "authors", "ratings", "mood"],
     template="""
@@ -40,7 +38,7 @@ prompt = PromptTemplate(
 )
 
 def get_book_recommendations(genre, language, year_range, authors, ratings, mood):
-    """Generate book recommendations with details using Google Gemini AI."""
+
     chain = prompt | llm
     return chain.invoke({
         "genre": genre,
@@ -51,12 +49,12 @@ def get_book_recommendations(genre, language, year_range, authors, ratings, mood
         "mood": mood if mood else "Any"
     }).content
 
-# Streamlit UI
+
 st.set_page_config(page_title="AI Book Recommendations")
 st.title("Intelligent Book Recommendation System")
 st.write("Discover personalized book recommendations powered by AI!")
 
-# User inputs for book preferences
+
 genre = st.text_input("Favourite Genre:", placeholder="e.g., Sci-Fi, Mystery, Romance")
 language = st.text_input("Preferred Language:", placeholder="e.g., English, Hindi, Spanish")
 authors = st.text_input("Favourite Authors (Optional):", placeholder="e.g., J.K. Rowling, Dan Brown")
@@ -70,7 +68,7 @@ if st.button("Get Recommendations"):
     else:
         st.subheader("Here are some book recommendations tailored to your preferences.")
         recommendations = get_book_recommendations(genre, language, f"{year_range[0]}-{year_range[1]}", authors, ratings, mood)
-        book_list = recommendations.split("\n\n")  # Split books into a list
+        book_list = recommendations.split("\n\n")  
 
         for book in book_list:
             if book.strip():

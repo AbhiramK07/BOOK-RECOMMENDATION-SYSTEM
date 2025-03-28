@@ -4,6 +4,9 @@ import requests
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 import langdetect  # For language detection
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 # Configure Streamlit page
 st.set_page_config(page_title="AI Book Recommender Chatbot")
@@ -12,7 +15,11 @@ st.set_page_config(page_title="AI Book Recommender Chatbot")
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 # Load Google Books API Key from Environment Variable
-GOOGLE_BOOKS_API_KEY = "AIzaSyAsyimatzvPsWiPFte4G0oK5WJsWXMjZtM"
+GOOGLE_BOOKS_API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
+
+if not GOOGLE_BOOKS_API_KEY:
+    raise ValueError("Please set the GOOGLE_BOOKS_API_KEY environment variable.")
+
 GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes"
 
 # Define chatbot prompt template

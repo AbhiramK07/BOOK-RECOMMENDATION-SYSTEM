@@ -1,100 +1,99 @@
 **1. INTRODUCTION**
 
   **1.1 Project Overview**
-
-    The AI Book Recommender Chatbot is a web-based application built using Streamlit and LangChain, 
-    integrated with Google Gemini AI (Gemini-2.0-Flash) to provide personalized book recommendations 
-    based on user preferences. Users can specify parameters such as genre, author, language, year of 
-    publication, and rating to receive AI-generated book suggestions.
+  The AI Book Recommender Chatbot is a web-based application built using Streamlit and LangChain, 
+  integrated with Google Gemini AI (Gemini-2.0-Flash) to provide personalized book recommendations 
+  based on user preferences. Users can specify parameters such as genre, author, language, year of 
+  publication, and rating to receive AI-generated book suggestions.
 
   **1.2 Objectives**
 
-    To create an AI-powered chatbot that recommends books based on user inputs.
+   - To create an AI-powered chatbot that recommends books based on user inputs.
 
-    To ensure recommendations are sorted based on average rating.
+   - To ensure recommendations are sorted based on average rating.
 
-    To provide detailed book information, including title, genre, publication year, author, rating, and description.
+   - To provide detailed book information, including title, genre, publication year, author, rating, and description.
 
-    To implement a user-friendly interface using Streamlit.
+   - To implement a user-friendly interface using Streamlit.
 
 
 **2. TECHNOLOGIES USED**
 
-**Technology                                Purpose**
+**Technology**                                **Purpose**
 
-Python                                    Backend logic & development
+Python                                  :  Backend logic & development
 
-Streamlit                                 Web UI framework for chatbot deployment
+Streamlit                               :  Web UI framework for chatbot deployment
 
-LangChain                                 AI-driven conversational framework
+LangChain                               :  AI-driven conversational framework
 
-Google Gemini AI (Gemini-2.0-Flash)       LLM for book recommendations
+Google Gemini AI (Gemini-2.0-Flash)     :  LLM for book recommendations
 
-dotenv                                    Environment variable management
+dotenv                                  :  Environment variable management
 
 
 **3. SYSTEM ARCHITECTURE**
 
   **3.1 Workflow**
 
-    User Input: The user provides details such as genre, author, language, publication year, and rating.
+   - User Input: The user provides details such as genre, author, language, publication year, and rating.
+   
+   - Prompt Creation: A structured prompt is generated with these parameters using LangChain PromptTemplate.
+   
+   - AI Processing: The prompt is sent to Google Gemini AI via LangChain.
     
-    Prompt Creation: A structured prompt is generated with these parameters using LangChain PromptTemplate.
+   - Response Handling: The AI model returns book recommendations in a structured format.
     
-    AI Processing: The prompt is sent to Google Gemini AI via LangChain.
-    
-    Response Handling: The AI model returns book recommendations in a structured format.
-    
-    Display Results: The recommendations are displayed using Streamlit with proper formatting.
+   - Display Results: The recommendations are displayed using Streamlit with proper formatting.
 
   **3.2 Components**
 
-    Frontend: Streamlit UI for user input and result display.
+   - Frontend: Streamlit UI for user input and result display.
     
-    Backend: Python-based logic using LangChain to process user requests.
+   - Backend: Python-based logic using LangChain to process user requests.
     
-    AI Model: Google Gemini AI for generating book recommendations.
+   - AI Model: Google Gemini AI for generating book recommendations.
 
 
 **4. FEATURES AND FUNCTIONALITIES**
 
  **4.1 User Input Fields**
 
-    Genre: Required input (e.g., Fiction, Science, Fantasy)
+   - Genre: Required input (e.g., Fiction, Science, Fantasy)
+   
+   - Author: Optional input for filtering books by a specific author
     
-    Author: Optional input for filtering books by a specific author
+   - Published Year: Adjustable slider for selecting a minimum publication year (default: 2000)
     
-    Published Year: Adjustable slider for selecting a minimum publication year (default: 2000)
+   - Language: Preferred book language (default: English)
     
-    Language: Preferred book language (default: English)
-    
-    Minimum Rating: Adjustable slider for selecting a minimum average rating (0.0 to 5.0)
+   - Minimum Rating: Adjustable slider for selecting a minimum average rating (0.0 to 5.0)
 
- ** 4.2 AI Book Recommendations**
+ **4.2 AI Book Recommendations**
 
-    AI generates 10 book recommendations based on user input.
+   - AI generates 10 book recommendations based on user input.
     
-    Books are sorted in descending order of rating.
+   - Books are sorted in descending order of rating.
     
-    Each recommendation includes:
+   - Each recommendation includes:
     
-    Title
+   - Title
     
-    Genre
+   - Genre
     
-    Year of Publication
+   - Year of Publication
     
-    Author
+   - Author
     
-    Average Rating
+   - Average Rating
     
-    Brief Description
+   - Brief Description
 
   **4.3 UI Display Enhancements**
   
-    Markdown formatting for structured display.
+   - Markdown formatting for structured display.
     
-    Separator ("---") to clearly differentiate book recommendations.
+   - Separator ("---") to clearly differentiate book recommendations.
     
-    Error Handling: Displays appropriate warnings if no recommendations are found.
+   - Error Handling: Displays appropriate warnings if no recommendations are found.
 

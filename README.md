@@ -17,9 +17,9 @@
    - To implement a user-friendly interface using Streamlit.
 
 
+
 **2. TECHNOLOGIES USED**
 
-**Technology**                                **Purpose**
 
 Python                                  :  Backend logic & development
 
@@ -30,6 +30,7 @@ LangChain                               :  AI-driven conversational framework
 Google Gemini AI (Gemini-2.0-Flash)     :  LLM for book recommendations
 
 dotenv                                  :  Environment variable management
+
 
 
 **3. SYSTEM ARCHITECTURE**
@@ -53,6 +54,7 @@ dotenv                                  :  Environment variable management
    - Backend: Python-based logic using LangChain to process user requests.
     
    - AI Model: Google Gemini AI for generating book recommendations.
+
 
 
 **4. FEATURES AND FUNCTIONALITIES**
@@ -89,11 +91,4 @@ dotenv                                  :  Environment variable management
     
    - Brief Description
 
-  **4.3 UI Display Enhancements**
-  
-   - Markdown formatting for structured display.
-    
-   - Separator ("---") to clearly differentiate book recommendations.
-    
-   - Error Handling: Displays appropriate warnings if no recommendations are found.
-
+ 

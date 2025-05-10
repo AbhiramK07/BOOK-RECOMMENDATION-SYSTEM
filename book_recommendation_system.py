@@ -43,7 +43,7 @@ st.title("AI Book Recommender Chatbot")
 # User Input Fields
 genre = st.text_input("Enter a book genre (e.g., Fiction, Science, Fantasy):")
 author = st.text_input("Enter an author (Optional):")
-published_year = st.slider("Select the minimum published year (Optional):", 1900, 2025, 2000)
+published_year = st.slider("Select the minimum published year (Optional):", 1800, 2025, 2000)
 language = st.text_input("Enter your preferred language:", value="English")  # Default to English
 rating = st.slider("Select minimum average rating (Optional):", 0.0, 5.0, 0.0)
 

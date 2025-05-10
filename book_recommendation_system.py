@@ -4,15 +4,12 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv(override=True)
 
 st.set_page_config(page_title="AI Book Recommender Chatbot")
 
-# Initialize LangChain LLM
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-# AI prompt template for book recommendations
 prompt = PromptTemplate(
     input_variables=["genre", "author", "published_year", "language", "rating"],
     template="""
@@ -52,7 +49,6 @@ rating = st.slider("Select minimum average rating (Optional):", 0.0, 5.0, 0.0)
 
 if st.button("Recommend Books"):
     if genre.strip():
-        # AI generates book recommendations
         response = (prompt | llm).invoke({
             "genre": genre,
             "author": author,
@@ -66,12 +62,12 @@ if st.button("Recommend Books"):
         if recommendations.strip():
             st.subheader(f"Recommended Books in {language}")
 
-            books_list = recommendations.split("---")  # Separate recommendations
+            books_list = recommendations.split("---") 
 
             for book in books_list:
                 st.markdown("**Book Recommendation:**")
                 st.markdown(book.strip())
-                st.write("───────────────────────────────────────")  # Adds a clear separator
+                st.write("───────────────────────────────────────") 
         else:
             st.warning("No recommendations found. Try different filters.")
     else:

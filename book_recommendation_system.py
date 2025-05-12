@@ -1,78 +1,117 @@
-import os
 import streamlit as st
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
+import requests
 from dotenv import load_dotenv
+import os
+from langchain.prompts import PromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-# Load environment variables
-load_dotenv(override=True)
+# Load API Key
+load_dotenv()
+if "GOOGLE_API_KEY" not in os.environ:
+    st.error("Google API key is missing! Please check your .env file.")
+    st.stop()
 
-st.set_page_config(page_title="AI Book Recommender Chatbot")
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
-# Initialize LangChain LLM
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+# Initialize Gemini
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.2)
 
-# AI prompt template for book recommendations
+# Prompt template
 prompt = PromptTemplate(
-    input_variables=["genre", "author", "published_year", "language", "rating"],
+    input_variables=["author", "genre", "language"],
     template="""
-    You are an intelligent AI book recommendation system that provides book suggestions based on user preferences:
+You are a helpful assistant. Based on the following inputs, suggest relevant books:
+- Author: {author}
+- Genre: {genre}
+- Language: {language}
 
-    - Genre: {genre}
-    - Preferred Language: {language}
-    - Author (Optional): {author}
-    - Minimum Average Rating (Optional): {rating}
-    - Year of Publication (Optional): {published_year}
+Ensure the following:
+1. Correct any typing errors or misspellings in the inputs.
+2. Verify that each input is valid based on available data sources i.e Open Library.
+3. Return a concise list of book titles only, including the author and language if available. 
+4. Do not include extra information, labels, or formatting.
 
-    Recommend 10 books in the specified language and format the output as follows:
-
-    **Title:** <Book Title>  \n
-    **Genre:** <Book Genre>  \n
-    **Year of Publication:** <Year> \n 
-    **Author:** <Book Author>  \n
-    **Average Rating:** <Rating> \n 
-    **Description:** <Brief Description>  
-
-    Sort the books by their ratings in descending order (highest to lowest).
-    Ensure that all recommendations are relevant and strictly in {language}.
-    Separate each recommendation clearly using "---".
-    And in each recommendation use a separate line for every detail.
-    """
+If any input is invalid or not found, do not include it in the response. Only valid suggestions should be returned.
+"""
 )
 
+chain = prompt | llm
+
 # Streamlit UI
-st.title("AI Book Recommender Chatbot")
+st.set_page_config(page_title="Book Recommender")
+st.title("AI Book Recommender")
 
-# User Input Fields
-genre = st.text_input("Enter a book genre (e.g., Fiction, Science, Fantasy):")
-author = st.text_input("Enter an author (Optional):")
-published_year = st.slider("Select the minimum published year (Optional):", 1900, 2025, 2000)
-language = st.text_input("Enter your preferred language:", value="English")  # Default to English
-rating = st.slider("Select minimum average rating (Optional):", 0.0, 5.0, 0.0)
+# Inputs
+author = st.text_input("Author Name").strip()
+genre = st.text_input("Genre").strip()
+language = st.text_input("Language").strip()
 
-if st.button("Recommend Books"):
-    if genre.strip():
-        # AI generates book recommendations
-        response = (prompt | llm).invoke({
-            "genre": genre,
+if st.button("Get Recommendations"):
+    if not author and not genre and not language:
+        st.warning("Please enter at least one field to continue.")
+    else:
+        st.spinner("Fetching books...")
+
+        result = chain.invoke({
             "author": author,
-            "published_year": published_year,
-            "language": language,
-            "rating": rating
+            "genre": genre,
+            "language": language
         })
 
-        recommendations = response.content if hasattr(response, "content") else str(response)
+        # Build Open Library query
+        query_parts = []
+        if author:
+            query_parts.append(f"author:{author}")
+        if genre:
+            query_parts.append(f"subject:{genre}")
+        if language:
+            query_parts.append(f"language:{language}")
 
-        if recommendations.strip():
-            st.subheader(f"Recommended Books in {language}")
+        search_query = " ".join(query_parts)
 
-            books_list = recommendations.split("---")  # Separate recommendations
+        @st.cache_resource
+        def fetch_books(query):
+            url = f"https://openlibrary.org/search.json?q={query}"
+            return requests.get(url)
 
-            for book in books_list:
-                st.markdown("**Book Recommendation:**")
-                st.markdown(book.strip())
-                st.write("───────────────────────────────────────")  # Adds a clear separator
+        response = fetch_books(search_query)
+
+        if response.status_code == 200:
+            books = response.json().get("docs", [])
+            if books:
+                st.subheader("Top Results")
+                for book in books[:10]:
+                    title = book.get("title")
+                    book_author = ", ".join(book.get("author_name"))
+                    year = book.get("first_publish_year")
+                    book_lang = ", ".join(book.get("language", [])).upper() if "language" in book else "Unknown"
+                    book_genre = ", ".join(book.get("subject", [])[:2]) if "subject" in book else None
+                    cover_id = book.get("cover_i")
+                    key = book.get("key")
+
+                    st.markdown(f"**Title:** {title} ({year})")
+                    st.markdown(f"**Author:** {book_author}")
+                    st.markdown(f"**Language:** {book_lang}")
+                    if book_genre:
+                        st.markdown(f"**Genre:** {book_genre}")
+
+                    if cover_id:
+                        st.image(f"https://covers.openlibrary.org/b/id/{cover_id}-M.jpg", width=100)
+
+                    if key:
+                        st.markdown(f"[🔗 View](https://openlibrary.org{key})")
+
+                    # Description
+                    desc_response = requests.get(f"https://openlibrary.org{key}.json")
+                    if desc_response.status_code == 200:
+                        desc = desc_response.json().get("description", "")
+                        if isinstance(desc, dict):
+                            desc = desc.get("value", "")
+                        if desc:
+                            st.markdown(f"**Description:** {desc}")
+
+                    st.markdown("---")
+            else:
+                st.info("No books found.")
         else:
-            st.warning("No recommendations found. Try different filters.")
-    else:
-        st.error("Please enter a genre!")
+            st.error("Could not retrieve data.")
